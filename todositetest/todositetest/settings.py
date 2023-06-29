@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+REST_USE_JWT = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -65,15 +65,20 @@ AUTH_USER_MODEL ='user.User'
 REST_FRAMEWORK = {
   'DEFAULT_PERMISSION_CLASSES': (
       'rest_framework.permissions.IsAuthenticated',
+      'rest_framework.permissions.IsAdminUser',
+      'rest_framework.permissions.AllowAny',
   ),
   'DEFAULT_AUTHENTICATION_CLASSES': (
+    'user.backends.JWTAuthentication',
     'rest_framework.authentication.SessionAuthentication',
     'rest_framework.authentication.BasicAuthentication',
-    'rest_framework_simplejwt.authentication.JWTAuthentication', 
+     'rest_framework.authentication.TokenAuthentication',
+
   ),
+    'EXCEPTION_HANDLER': 'todositetest.exceptions.core_exception_handler',
+    'NON_FIELD_ERRORS_KEY': 'error',
 }
 
-REST_USE_JWT = True
 
 TEMPLATES = [
     {
@@ -101,12 +106,20 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    },
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'postgres',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'qwerty12345',
+    #     'HOST':'localhost',
+    #     'PORT':'5432',
+    # }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {
