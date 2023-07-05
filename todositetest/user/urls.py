@@ -2,13 +2,15 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import include
 from .views import (
-    LoginAPIView, RegistrationAPIView, UserRetrieveUpdateAPIView
+    LoginAPIView, RegistrationAPIView, UserLogoutAPIView, UserAPIView
 )
+from rest_framework_simplejwt.views import TokenRefreshView
 
 app_name = 'user'
 urlpatterns = [
-    path('user/', UserRetrieveUpdateAPIView.as_view()),
-    path('users/', RegistrationAPIView.as_view()),
-    # path('users/<int:pk>/', RegistrationAPIView.as_view()),
-    path('users/login/', LoginAPIView.as_view()),
+    path("register/", RegistrationAPIView.as_view(), name="create-user"),
+    path("login/", LoginAPIView.as_view(), name="login-user"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
+    path("logout/", UserLogoutAPIView.as_view(), name="logout-user"),
+    path("", UserAPIView.as_view(), name="user-info"),
 ]
