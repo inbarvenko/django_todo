@@ -1,32 +1,23 @@
 from django.db import models
 
-from django.contrib.auth import get_user_model
+from django.conf import settings
 
-from user.models import User
-
-
-User = get_user_model()
-
-class TodoManager(models.Manager):
-  def create_todo(self, title, author, completed=False):
-        if title is None:
-            raise TypeError('Todo must have a title.')
-        if author is None:
-            raise TypeError('Todo must have an author.')
-
-        todo = self.model(title=title, completed=completed, author=author)
-        todo.save()
-
-        return todo
+from django.utils.translation import gettext_lazy as _
 
 class Todo(models.Model):
-  title = models.CharField("Title", max_length=100, default='Nothing')
-  completed = models.BooleanField("Completed",default=False)
-  # author = models.CharField("Title", max_length=100, default='Nothing')
-  author = models.ForeignKey(User, on_delete=models.CASCADE)
-  # author = models.ForeignKey(to=User, on_delete=models.CASCADE)
-  
-  objects = TodoManager()
+    title = models.CharField(_("Todo title"), max_length=250)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="todos",
+        null=True,
+        on_delete=models.CASCADE,
+    )
+    completed = models.BooleanField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
-  def __str__(self):
-    return self.title
+    class Meta:
+        ordering = ("-created_at",)
+
+    def __str__(self):
+        return f"{self.title} by {self.author.username}"

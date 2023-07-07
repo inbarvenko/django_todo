@@ -1,35 +1,26 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.permissions import AllowAny
-from rest_framework import status
-from rest_framework.response import Response
-from .renderers import TodoJSONRenderer
-from rest_framework.generics import RetrieveUpdateAPIView
-from .serializer import TodoSerializer
+from .serializers import TodoReadSerializer, TodoWriteSerializer
 from .models import Todo
-from rest_framework.renderers import JSONRenderer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework import viewsets
 
-class TodoAPIView(RetrieveUpdateAPIView):
-    permission_classes = (AllowAny,)
-    renderer_classes = [JSONRenderer]
-    serializer_class = TodoSerializer
+class TodoViewSet(viewsets.ModelViewSet):
+    """
+    CRUD posts
+    """
 
-    def get(self, request):
-        queryset = Todo.objects.all()
+    # token = RefreshToken.get_user("admin")
+    # serialize = serializers.CurrentUserDefault()
+    queryset = Todo.objects.filter(author=1)
+    permission_classes = (IsAuthenticated,)
 
-        serializer_for_queryset = TodoSerializer(
-            instance=queryset,  
-            many=True  
-        )
-        return Response(serializer_for_queryset.data)
-    
-    def post(self, request):
-        print(request.data)
-        todo = request.data.get('todo', {})
 
-        serializer = self.serializer_class(data=todo)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
+    # In order to use different serializers for different 
+    # actions, you can override the 
+    # get_serializer_class(self) method
+    def get_serializer_class(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return TodoWriteSerializer
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return TodoReadSerializer
+
     
