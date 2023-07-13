@@ -12,5 +12,5 @@ urlpatterns = [
     path("login/", LoginAPIView.as_view(), name="login-user"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token-refresh"),
     path("logout/", UserLogoutAPIView.as_view(), name="logout-user"),
-    path("", UserAPIView.as_view(), name="user-info"),
+    path("user", UserAPIView.as_view(), name="user-info"),
 ]

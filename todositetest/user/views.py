@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+
 from .serializers import (
     LoginSerializer, RegistrationSerializer, UserSerializer
 )
@@ -22,7 +23,7 @@ class RegistrationAPIView(GenericAPIView):
         token = RefreshToken.for_user(user)
         data = serializer.data
         data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
-        
+        # headers = {"Authorization": f'Bearer {str(token.access_token)}'}
         return Response(data, status=status.HTTP_201_CREATED)
     
 
@@ -40,7 +41,7 @@ class LoginAPIView(GenericAPIView):
         serializer = UserSerializer(user)
         token = RefreshToken.for_user(user)
         data = serializer.data
-        headers = {"Authorization": {"refresh": str(token), "access": str(token.access_token)}}
+        # headers = {"Authorization": f'Bearer {str(token.access_token)}'}
         data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
         
         return Response(data, status=status.HTTP_200_OK)

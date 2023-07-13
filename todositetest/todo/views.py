@@ -13,6 +13,19 @@ class TodoViewSet(viewsets.ModelViewSet):
     queryset = Todo.objects.filter(author=1)
     permission_classes = (IsAuthenticated,)
 
+    # def get_queryset(self):
+    #     filte = self.request.query_params.get('filter')
+    #     page = self.request.query_params.get('page')
+    #     print(filte, page)
+
+    #     if (filte == 'all' or not filte):
+    #         queryset = Todo.objects.filter(author=1)
+    #     else:
+    #         fil = (filte == 'completed')
+    #         queryset = Todo.objects.filter(author=1, completed=fil)
+
+    #     return queryset
+
 
     # In order to use different serializers for different 
     # actions, you can override the 
