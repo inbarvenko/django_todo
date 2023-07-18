@@ -1,10 +1,4 @@
-import { Component } from "react";
-import { Routes, Route, Link, BrowserRouter } from "react-router-dom";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "./App.css";
-
-import AuthService from "../../api/userApi";
-import IUser from "../../types";
+import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
 
 import Login from "../Login/Login";
 import Register from "../Register/Register";
@@ -12,25 +6,69 @@ import User from "../User/User";
 import Todos from "../Todos/Todos";
 import Navbar from "../Navbar/Navbar";
 
-import EventBus from "../../eventBus";
+import { RequireAuth } from "./requireauth";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import jwt_decode from "jwt-decode";
+import { LocalStorageTools } from "../../localStorage";
+import {DecodedJWT, Token} from '../../types'
+import { setUser } from "../../redux/userData";
+import { userCheck } from "../../api/userApi";
+import { useEffect } from "react";
 
-class App extends Component {
+const App: React.FC = () =>{
+  const dispatch = useAppDispatch();
+  const user = useAppSelector((state) => state.userData.username)
+  // const tokens: Token = LocalStorageTools.getItemFromLocalStorage('tokens')
+  // const userInfo: DecodedJWT | null = tokens ? jwt_decode(tokens.access) : null;
+  // if (userInfo) {
+  //   userCheck(userInfo.user_id).then((response)=> {
+  //     dispatch(setUser(response?.data))
+  //   })
+  // }
+  // const user = useAppSelector((state) => state.userData.username)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const tokens: Token = LocalStorageTools.getItemFromLocalStorage('tokens')
+        const userInfo: DecodedJWT | null = tokens ? jwt_decode(tokens.access) : null;
+        if (userInfo) {
+          userCheck(userInfo.user_id).then((response)=> {
+            dispatch(setUser(response?.data))
+          })
+        }
+      } catch (err) {
+        console.log(`Error! Unable to check tokens! ${err}`);
+      }
+    })();
+  }, []);
   
-  render() {
     return (
       <BrowserRouter>
         <Navbar/>
           <div className="container mt-3">
             <Routes>
               <Route path="/" element={<Login />} />
-              <Route path="/todos" element={<Todos />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/user" element={<User />} />
             </Routes>
+              {user
+              ? 
+              <Routes>
+                <Route path="/todos" element={
+                <RequireAuth>
+                  <Todos />
+                </RequireAuth>
+                } />
+              <Route path="/user" element={
+                <RequireAuth>
+                  <User />
+                </RequireAuth>
+              } />
+            </Routes>
+            : null}
           </div>
       </BrowserRouter>
     );
   }
-}
 
 export default App;

@@ -7,7 +7,9 @@ export const  currentToDoList = (state : RootState) => state.todoData.toDoList;
 export const currentFilter = (state : RootState) => state.todoData.filter;
 
 export const getActiveTasksOnPage = (state : RootState) => {
-  const arr = state.todoData.toDoList.filter((item) => !item.completed);
+  const arr = state.todoData.toDoList.filter((item) => {
+    console.log(item)
+    return !item.completed});
   return arr.length;
 }
 
@@ -24,3 +26,4 @@ export const filteredToDoList = createSelector(
     }
   }
 )
+

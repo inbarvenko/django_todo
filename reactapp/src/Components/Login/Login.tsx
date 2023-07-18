@@ -1,11 +1,10 @@
-import { Component } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import AuthService from "../../api/userApi";
-
-type Props = {};
+import {login} from "../../api/userApi";
+import { useAppDispatch, useAppSelector } from "../../redux/hooks";
+import { useEffect } from "react";
 
 type State = {
   redirect: string | null,
@@ -15,77 +14,58 @@ type State = {
   message: string
 };
 
-export default class Login extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.handleLogin = this.handleLogin.bind(this);
 
-    this.state = {
-      redirect: null,
-      email: "",
-      password: "",
-      loading: false,
-      message: ""
-    };
+const Login: React.FC = () => {
+
+  const state: State = {
+    redirect: null,
+    email: "",
+    password: "",
+    loading: false,
+    message: ""
   }
 
-  componentDidMount() {
-    const currentUser = AuthService.getCurrentUser();
-    console.log("1", currentUser)
+  const navigate = useNavigate();
+  const user = useAppSelector((state) => state.userData.username);
+  const dispatch = useAppDispatch();
 
-    if (currentUser) {
-      this.setState({ redirect: "/user" });
-    };
-  }
+  useEffect(() => {
+    if(user) {
+      navigate('/user')
+    }
+  }, [user])
 
-  componentWillUnmount() {
-    window.location.reload();
-  }
-
-  validationSchema() {
+  const validationSchema = () => {
     return Yup.object().shape({
       email: Yup.string().required("This field is required!"),
       password: Yup.string().required("This field is required!"),
     });
   }
 
-  handleLogin(formValue: { email: string; password: string }) {
+  const handleLogin = (formValue: { email: string; password: string }) => {
     const { email, password } = formValue;
+    state.message = "";
+    state.loading = true;
 
-    this.setState({
-      message: "",
-      loading: true
-    });
+    login(email, password, dispatch)
+      .then(
+        () => {
+          navigate('/user')
+        },
+        error => {
+          const resMessage =
+            (error.response &&
+              error.response.data &&
+              error.response.data.message) ||
+            error.message ||
+            error.toString();
 
-
-    AuthService.login(email, password).then(
-      () => {
-        this.setState({
-          redirect: "/user"
-        });
-      },
-      error => {
-        const resMessage =
-          (error.response &&
-            error.response.data &&
-            error.response.data.message) ||
-          error.message ||
-          error.toString();
-
-        this.setState({
-          loading: false,
-          message: resMessage
-        });
-      }
-    );
+            state.loading = false;
+            state.message = resMessage;
+          });
   }
 
-  render() {
-    if (this.state.redirect) {
-      return <Navigate to={this.state.redirect} />
-    }
-
-    const { loading, message } = this.state;
+    const { loading, message } = state;
 
     const initialValues = {
       email: "",
@@ -103,8 +83,8 @@ export default class Login extends Component<Props, State> {
 
           <Formik
             initialValues={initialValues}
-            validationSchema={this.validationSchema}
-            onSubmit={this.handleLogin}
+            validationSchema={validationSchema}
+            onSubmit={handleLogin}
           >
             <Form>
               <div className="form-group">
@@ -149,4 +129,5 @@ export default class Login extends Component<Props, State> {
       </div>
     );
   }
-}
+
+  export default Login;

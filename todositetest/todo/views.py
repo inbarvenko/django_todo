@@ -8,23 +8,23 @@ class TodoViewSet(viewsets.ModelViewSet):
     CRUD posts
     """
 
-    # token = RefreshToken.get_user("admin")
-    # serialize = serializers.CurrentUserDefault()
-    queryset = Todo.objects.filter(author=1)
     permission_classes = (IsAuthenticated,)
 
-    # def get_queryset(self):
-    #     filte = self.request.query_params.get('filter')
-    #     page = self.request.query_params.get('page')
-    #     print(filte, page)
+    def get_queryset(self):
+        filte = self.request.query_params.get('filter')
+        page = self.request.query_params.get('page')
+        userId = self.request.query_params.get('userId')
+        print(filte, page, userId)
 
-    #     if (filte == 'all' or not filte):
-    #         queryset = Todo.objects.filter(author=1)
-    #     else:
-    #         fil = (filte == 'completed')
-    #         queryset = Todo.objects.filter(author=1, completed=fil)
-
-    #     return queryset
+        if Todo.objects.all():
+            if (filte == 'all' or not filte):
+                queryset = Todo.objects.filter(author=userId)
+            else:
+                fil = (filte == 'completed')
+                queryset = Todo.objects.filter(author=userId, completed=fil)
+            return queryset
+        else:
+            return {}
 
 
     # In order to use different serializers for different 
@@ -33,7 +33,6 @@ class TodoViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ("create", "update", "partial_update", "destroy"):
             return TodoWriteSerializer
-
         return TodoReadSerializer
 
     

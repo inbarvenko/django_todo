@@ -1,11 +1,10 @@
 import { LocalStorageTools } from "../localStorage";
-import IUser from "../types";
+import { Token } from "../types";
 
 export default function authHeader() {
-    const user = LocalStorageTools.getItemFromLocalStorage<IUser>('user');
-  
-    if (user && user.tokens) {
-      return { Authorization: 'Bearer ' + user.tokens.access };
+    const tokens = LocalStorageTools.getItemFromLocalStorage<Token>('tokens');
+    if (tokens) {
+      return { Authorization: 'Bearer ' + tokens.access };
     } else {
       return { Authorization: '' };
     }

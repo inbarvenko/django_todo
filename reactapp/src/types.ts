@@ -1,7 +1,10 @@
 export type ToDoType = {
-  _id: number;
+  id: number;
   title: string;
   completed: boolean;
+  author?: string;
+  completed_at?: string,
+  created_at?: string;
 };
 
 export enum FilterEnum {
@@ -10,16 +13,23 @@ export enum FilterEnum {
   completed = 'completed',
 };
 
+export type DecodedJWT = {
+  "token_type"?: string,
+  "exp"?: number,
+  "iat"?: number,
+  "jti"?: string,
+  "user_id": number
+}
+
 export type Token = {
   refresh: string;
   access: string;
 }
 
 export default interface IUser {
-  id?: any | null,
+  id?: number | null,
   username?: string | null,
   email?: string,
-  tokens: Token
 }
 
 export type AvailableButtonTypes = 'edit' | 'delete';

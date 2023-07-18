@@ -30,7 +30,7 @@ const TaskList: React.FC = () => {
             <Task
               task={item}
               // onChange = {triggerRerenderList}
-              key={item._id}
+              key={item.id}
             />
           )
         })

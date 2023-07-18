@@ -43,7 +43,7 @@ const toDoList = createSlice({
     },
     changeStatusTask: (state, action: PayloadAction<number>) => {
       state.toDoList.forEach((item) => {
-        if (item._id === action.payload) {
+        if (item.id === action.payload) {
           item.completed = !item.completed;
         }
         return item;
@@ -51,10 +51,10 @@ const toDoList = createSlice({
     },
     changeTitleTask: (
       state,
-      action: PayloadAction<{ _id: number; title: string }>
+      action: PayloadAction<{ id: number; title: string }>
     ) => {
       state.toDoList.forEach((item) => {
-        if (item._id === action.payload._id) {
+        if (item.id === action.payload.id) {
           item.title = action.payload.title.trim();
         }
         return item;
@@ -64,17 +64,18 @@ const toDoList = createSlice({
   extraReducers: (builder) => { 
     builder.addCase(getTodos.fulfilled, (state, action) => {
       try{
+        console.log(action.payload)
         state.pages = action.payload.pages;
         state.toDoList = action.payload.todos;
         state.activeTasks = action.payload.activeTasks;
       }
       catch(err){
-        console.log(`Error! Unable to get todos! ${err}`);
+        console.log(`111 Error! Unable to get todos! ${err}`);
       }
     });
 
     builder.addCase(getTodos.rejected, (state, action) => {
-      console.log(`Error! Unable to get todos!`);
+      console.log(`222 Error! Unable to get todos!`);
     });
   }
 });

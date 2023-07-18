@@ -1,10 +1,10 @@
-import { Component } from "react";
+import { useNavigate } from "react-router-dom";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
-import AuthService from "../../api/userApi";
-
-type Props = {};
+import { register } from "../../api/userApi";
+import { useAppDispatch } from "../../redux/hooks";
+import { Navigate } from "react-router-dom";
 
 type State = {
   username: string,
@@ -14,21 +14,20 @@ type State = {
   message: string
 };
 
-export default class Register extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.handleRegister = this.handleRegister.bind(this);
-
-    this.state = {
-      username: "",
-      email: "",
-      password: "",
-      successful: false,
-      message: ""
-    };
+const Register: React.FC = () => {
+  const state:State = {
+    username: "",
+    email: "",
+    password: "",
+    successful: false,
+    message: ""
   }
 
-  validationSchema() {
+  const navigate = useNavigate();
+
+  const dispatch = useAppDispatch();
+
+  const validationSchema = () => {
     return Yup.object().shape({
       username: Yup.string()
         .test(
@@ -56,24 +55,20 @@ export default class Register extends Component<Props, State> {
     });
   }
 
-  handleRegister(formValue: { username: string; email: string; password: string }) {
+  const handleRegister = (formValue: { username: string; email: string; password: string }) => {
     const { username, email, password } = formValue;
 
-    this.setState({
-      message: "",
-      successful: false
-    });
+    state.message = "";
+    state.successful = false;
 
-    AuthService.register(
+    register(
       username,
       email,
-      password
+      password,
+      dispatch
     ).then(
-      response => {
-        this.setState({
-          message: response.data.message,
-          successful: true
-        });
+      () => {
+        navigate('/user')
       },
       error => {
         const resMessage =
@@ -83,16 +78,12 @@ export default class Register extends Component<Props, State> {
           error.message ||
           error.toString();
 
-        this.setState({
-          successful: false,
-          message: resMessage
+          state.successful = false;
+          state.message = resMessage;
         });
       }
-    );
-  }
 
-  render() {
-    const { successful, message } = this.state;
+    const { successful, message } = state;
 
     const initialValues = {
       username: "",
@@ -111,8 +102,8 @@ export default class Register extends Component<Props, State> {
 
           <Formik
             initialValues={initialValues}
-            validationSchema={this.validationSchema}
-            onSubmit={this.handleRegister}
+            validationSchema={validationSchema}
+            onSubmit={handleRegister}
           >
             <Form>
               {!successful && (
@@ -174,5 +165,6 @@ export default class Register extends Component<Props, State> {
         </div>
       </div>
     );
-  }
 }
+
+export default Register;

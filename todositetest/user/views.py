@@ -2,7 +2,9 @@ from rest_framework import status
 from rest_framework.generics import GenericAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
+import json
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import User
 
 
 from .serializers import (
@@ -12,9 +14,6 @@ from .serializers import (
 class RegistrationAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = RegistrationSerializer
-
-    def get(self, request, format=None):
-        return Response({})
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -26,13 +25,10 @@ class RegistrationAPIView(GenericAPIView):
         # headers = {"Authorization": f'Bearer {str(token.access_token)}'}
         return Response(data, status=status.HTTP_201_CREATED)
     
-
+    
 class LoginAPIView(GenericAPIView):
     permission_classes = (AllowAny,)
     serializer_class = LoginSerializer
-
-    def get(self, request, format=None):
-        return Response({})
 
     def post(self, request):
         serializer = self.get_serializer(data=request.data)
@@ -41,10 +37,31 @@ class LoginAPIView(GenericAPIView):
         serializer = UserSerializer(user)
         token = RefreshToken.for_user(user)
         data = serializer.data
-        # headers = {"Authorization": f'Bearer {str(token.access_token)}'}
         data["tokens"] = {"refresh": str(token), "access": str(token.access_token)}
         
         return Response(data, status=status.HTTP_200_OK)
+
+
+class IdGetUser(GenericAPIView):
+    permission_classes = (AllowAny,)
+    serializer_class = UserSerializer
+
+    def post(self,request):
+        reqdata = request.data['data']
+        userID = reqdata['id']
+        print(userID)
+        if userID:
+            user = User.objects.get_user(userID)
+            serializer = UserSerializer(user)
+            data = serializer.data
+            print(data)
+        else: 
+            data = {
+                "user": 'no user found' 
+            }
+        return Response(data, status=status.HTTP_200_OK)
+
+
 
 class UserLogoutAPIView(GenericAPIView):
 
@@ -53,6 +70,7 @@ class UserLogoutAPIView(GenericAPIView):
     def post(self, request, *args, **kwargs):
         try:
             refresh_token = request.data["refresh"]
+            print(refresh_token)
             token = RefreshToken(refresh_token)
             token.blacklist()
             return Response(status=status.HTTP_205_RESET_CONTENT)

@@ -18,6 +18,7 @@ const Task: React.FC<Props> = (props) => {
   const dispatch = useAppDispatch();
   const filter = useAppSelector((state) => state.todoData.filter)
   const currentPage = useAppSelector((state) => state.todoData.currentPage)
+  const userID = useAppSelector((state) => state.userData.id)
 
 
   const editTask = () => {
@@ -31,11 +32,11 @@ const Task: React.FC<Props> = (props) => {
       if (titleTrim) {
         await updateTodo({
           title: titleTrim,
-          _id: props.task._id,
+          id: props.task.id,
           completed: props.task.completed
         });
         dispatch(changeTitleTask({
-          _id: props.task._id,
+          id: props.task.id,
           title: titleTrim
         }));
       }
@@ -51,11 +52,11 @@ const Task: React.FC<Props> = (props) => {
     try {
       await updateTodo({
         title: props.task.title,
-        _id: props.task._id,
-        completed: !props.task.completed
+        id: props.task.id,
+        completed: !props.task.completed,
       });
 
-      dispatch(changeStatusTask(props.task._id));
+      dispatch(changeStatusTask(props.task.id));
     }
     catch (err) {
       console.log(`Error! Unable to change status of task! ${err}`);
@@ -64,8 +65,8 @@ const Task: React.FC<Props> = (props) => {
 
   const onButtonClick = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     try {
-      await deleteTodo(props.task._id);
-      await dispatch(getTodos({filter, currentPage}))
+      await deleteTodo(props.task.id);
+      await dispatch(getTodos({filter, currentPage, userID}))
 
     }
     catch (err) {

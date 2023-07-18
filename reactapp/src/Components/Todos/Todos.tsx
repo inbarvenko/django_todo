@@ -14,13 +14,15 @@ const Todos: React.FC = () => {
   const filter = useAppSelector((state) => state.todoData.filter);
   const currentPage = useAppSelector((state) => state.todoData.currentPage);
   const activeTasks = useAppSelector((state) => state.todoData.activeTasks);
+  const userID = useAppSelector((state) => state.userData.id)
   const activeTasksOnPage = useAppSelector(getActiveTasksOnPage);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
     (async () => {
       try {
-        await dispatch(getTodos({ filter, currentPage }));
+        
+        await dispatch(getTodos({ filter, currentPage, userID }));
       } catch (err) {
         console.log(`Error! Unable to get todos! ${err}`);
       }
@@ -32,7 +34,7 @@ const Todos: React.FC = () => {
 
     try {
       await addTodo(title);
-      await dispatch(getTodos({ filter, currentPage }));
+      await dispatch(getTodos({ filter, currentPage, userID }));
     } catch (err) {
       console.log(`Error! Unable to make a new task! ${err}`);
     }

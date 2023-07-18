@@ -1,54 +1,19 @@
-import { Component } from "react";
 import { Link } from "react-router-dom";
 
-import AuthService from "../../api/userApi";
-import IUser from '../../types';
+import {logout} from "../../api/userApi";
+import { Token } from '../../types';
 
-import EventBus from "../../eventBus";
+import { LocalStorageTools } from "../../localStorage";
+import { useAppSelector } from "../../redux/hooks";
 
-type Props = {};
-
-type State = {
-  currentUser: IUser | undefined
-}
-
-class Navbar extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.logOut = this.logOut.bind(this);
-
-    this.state = {
-      currentUser: undefined,
-    };
+const Navbar: React.FC = () => {
+  const logOut = () => {
+    const tokens: Token = LocalStorageTools.getItemFromLocalStorage('tokens');
+    console.log(tokens.refresh)
+    logout(tokens.refresh);
   }
 
-  componentDidMount() {
-    const user = AuthService.getCurrentUser();
-
-    if (user) {
-      this.setState({
-        currentUser: user,
-      });
-    }
-
-    EventBus.on("logout", this.logOut);
-  }
-
-  componentWillUnmount() {
-    EventBus.remove("logout", this.logOut);
-  }
-
-  logOut() {
-    const user = AuthService.getCurrentUser();
-    console.log('user', user)
-    AuthService.logout(user.tokens.refresh);
-    this.setState({
-      currentUser: undefined,
-    });
-  }
-
-  render() {
-    const { currentUser } = this.state;
+  const currentUsername= useAppSelector((state) => state.userData.username);
 
     return (
       <div>
@@ -61,15 +26,15 @@ class Navbar extends Component<Props, State> {
             </li>
           </div>
 
-          {currentUser ? (
+          {currentUsername ? (
             <div className="navbar-nav ml-auto">
               <li className="nav-item">
                 <Link to={"/user"} className="nav-link">
-                  {currentUser.username}
+                  {currentUsername}
                 </Link>
               </li>
               <li className="nav-item">
-                <a href="/" className="nav-link" onClick={this.logOut}>
+                <a href="/" className="nav-link" onClick={logOut}>
                   LogOut
                 </a>
               </li> 
@@ -93,7 +58,6 @@ class Navbar extends Component<Props, State> {
       </div>
     );
   }
-}
 
 
 export default Navbar;
