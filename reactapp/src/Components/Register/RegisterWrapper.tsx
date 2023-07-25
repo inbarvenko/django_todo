@@ -1,9 +1,9 @@
 import styled from "styled-components";
 
-export const LoginWrapper = styled.div`
+export const RegisterWrapper = styled.div`
   font-family:'Montserrat', sans-serif;
 
-  .login_container{
+  .register_container{
     width: 100w;
     height: 100h;
 
@@ -13,7 +13,7 @@ export const LoginWrapper = styled.div`
     justify-content:space-evenly;
   }
 
-  .login_form{
+  .register_form{
     padding-top: 15px;
 
     display: flex;
@@ -22,7 +22,7 @@ export const LoginWrapper = styled.div`
     justify-content:space-evenly;
   }
 
-  .login_textfield{
+  .register_textfield{
     width: 100%;
     margin: 7px 0 7px 0;
   }

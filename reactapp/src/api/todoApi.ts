@@ -1,5 +1,5 @@
 import { ToDoType } from "../types";
-import IUser from '../types';
+import IUser from "../types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import authHeader from "./headers";
 import { axiosInstance } from "./request";
@@ -7,56 +7,71 @@ import { LocalStorageTools } from "../localStorage";
 import { useAppSelector } from "../redux/hooks";
 
 type Results = {
-  todos: ToDoType[],
-  pages: number[],
-  activeTasks: number,
-}
+  todos: ToDoType[];
+  pages: number;
+  activeTasks: number;
+};
 
 type ResponseTodo = {
-  results: ToDoType[],
-}
+  todos: ToDoType[];
+  pages: number[];
+  activeTasks: number;
+};
 
 type Params = {
-  filter: string,
-  currentPage: number,
-  userID: number | null | undefined
-}
+  filter: string | undefined;
+  currentPage: number | undefined;
+  userID: number | null | undefined;
+};
 
-export const getTodos = createAsyncThunk('todos/getTodos',
+const makeArray = (num: number) => {
+  const array = [];
+  while(num>0){
+    array.unshift(num--);
+  }
+  return array;
+};
+
+export const getTodos = createAsyncThunk(
+  "todos/getTodos",
   async (arg: Params, thunkAPI) => {
-    console.log('get todos')
+    console.log("get todos");
     const auth = authHeader();
-    const res = await axiosInstance.get<ResponseTodo>('/todos',
-      {
-        headers: auth,
-        params: {
-          filter: arg.filter,
-          page: arg.currentPage,
-          userId: arg.userID
-        },
-      });
-      console.log(res)
-      const dsa: Results = {
-        pages: [1],
-        todos: res?.data.results,
-        activeTasks: 5
-      }
+    const res = await axiosInstance.get<Results>("/todos/", {
+      headers: auth,
+      params: {
+        filter: arg.filter,
+        page: arg.currentPage,
+        userId: arg.userID,
+      },
+    });
+    const dsa: ResponseTodo = {
+      pages: makeArray(res?.data.pages),
+      todos: res?.data.todos,
+      activeTasks: res?.data.activeTasks,
+    };
     return dsa;
   }
-)
+);
 
 export const addTodo = (title: string) => {
-  console.log(title)
-  return axiosInstance.post<ToDoType>('/', { title });
-}
+  const auth = authHeader();
+  return axiosInstance.post<ToDoType>(
+    "/todos/",
+    { title: title },
+    { headers: auth }
+  );
+};
 
 export const updateTodo = (item: ToDoType) => {
-  return axiosInstance.patch<ToDoType>('/', item);
-}
+  return axiosInstance.patch<ToDoType>("/todos/", item);
+};
 
 export const deleteTodo = (itemID: number) => {
-  console.log(itemID)
-  return axiosInstance.delete<ToDoType>('/', {
-    data: { _id: itemID },
+  console.log(itemID);
+  const auth = authHeader();
+  return axiosInstance.delete<ToDoType>("/todos/", {
+    data: { id: itemID },
+    headers: auth,
   });
-}
+};

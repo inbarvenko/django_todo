@@ -12,7 +12,7 @@ class Todo(models.Model):
         null=True,
         on_delete=models.CASCADE,
     )
-    completed = models.BooleanField()
+    completed = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

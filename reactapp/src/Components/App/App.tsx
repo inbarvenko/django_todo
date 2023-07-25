@@ -18,14 +18,8 @@ import { useEffect } from "react";
 const App: React.FC = () =>{
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.userData.username)
-  // const tokens: Token = LocalStorageTools.getItemFromLocalStorage('tokens')
-  // const userInfo: DecodedJWT | null = tokens ? jwt_decode(tokens.access) : null;
-  // if (userInfo) {
-  //   userCheck(userInfo.user_id).then((response)=> {
-  //     dispatch(setUser(response?.data))
-  //   })
-  // }
-  // const user = useAppSelector((state) => state.userData.username)
+  const page = useAppSelector((state) => state.todoData.currentPage)
+  const filter = useAppSelector((state) => state.todoData.filter)
 
   useEffect(() => {
     (async () => {
@@ -37,11 +31,12 @@ const App: React.FC = () =>{
             dispatch(setUser(response?.data))
           })
         }
+
       } catch (err) {
         console.log(`Error! Unable to check tokens! ${err}`);
       }
     })();
-  }, []);
+  }, [page, filter]);
   
     return (
       <BrowserRouter>
@@ -54,11 +49,11 @@ const App: React.FC = () =>{
               {user
               ? 
               <Routes>
-                <Route path="/todos" element={
-                <RequireAuth>
-                  <Todos />
-                </RequireAuth>
-                } />
+                <Route path={`/todos/${filter}/${page}`} element={
+                    <RequireAuth>
+                      <Todos />
+                    </RequireAuth>
+                  } />
               <Route path="/user" element={
                 <RequireAuth>
                   <User />

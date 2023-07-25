@@ -14,13 +14,15 @@ const Navbar: React.FC = () => {
   }
 
   const currentUsername= useAppSelector((state) => state.userData.username);
+  const page = useAppSelector((state) => state.todoData.currentPage)
+  const filter = useAppSelector((state) => state.todoData.filter)
 
     return (
       <div>
         <nav className="navbar navbar-expand navbar-dark bg-dark">
           <div className="navbar-nav mr-auto">
             <li className="nav-item">
-              <Link to={"/todos"} className="nav-link">
+              <Link to={`/todos/${filter}/${page}`} className="nav-link">
                 Todos
               </Link>
             </li>

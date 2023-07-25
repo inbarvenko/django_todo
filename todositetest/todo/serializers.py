@@ -10,7 +10,15 @@ class TodoReadSerializer(serializers.ModelSerializer):
 
 
 class TodoWriteSerializer(serializers.ModelSerializer):
-    author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    # author = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    
+
+    def create(self, validated_data):
+        title = validated_data.get('title')  # optional, read validated data
+        validated_data['author'] = self.context['author'] # optional , saving extra data
+        todo = Todo.objects.create(**validated_data)  # saving post object
+        print(todo)
+        return todo
 
     class Meta:
         model = Todo

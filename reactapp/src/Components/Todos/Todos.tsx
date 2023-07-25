@@ -9,10 +9,20 @@ import { ThemeProvider } from "styled-components";
 import { myTheme } from "../../styles/theme";
 import { getTodos, addTodo } from "../../api/todoApi";
 import { getActiveTasksOnPage } from "../../redux/selectors";
+import { useParams } from "react-router-dom";
 
 const Todos: React.FC = () => {
-  const filter = useAppSelector((state) => state.todoData.filter);
-  const currentPage = useAppSelector((state) => state.todoData.currentPage);
+
+  let { filter, page } = useParams();
+  // if(!filter) {
+  //   filter = 'all'
+  // }
+  let currentPage = 1;
+  if(page) {
+    currentPage = +page ;
+  }
+  const storePage = useAppSelector((state) => state.todoData.currentPage)
+  const storeFilter = useAppSelector((state) => state.todoData.filter)
   const activeTasks = useAppSelector((state) => state.todoData.activeTasks);
   const userID = useAppSelector((state) => state.userData.id)
   const activeTasksOnPage = useAppSelector(getActiveTasksOnPage);
@@ -21,13 +31,12 @@ const Todos: React.FC = () => {
   useEffect(() => {
     (async () => {
       try {
-        
         await dispatch(getTodos({ filter, currentPage, userID }));
       } catch (err) {
         console.log(`Error! Unable to get todos! ${err}`);
       }
     })();
-  }, [filter, currentPage, activeTasksOnPage]);
+  }, [storeFilter, storePage, activeTasksOnPage]);
 
   const newTask = async (title: string) => {
     if (!title.trim()) return;
