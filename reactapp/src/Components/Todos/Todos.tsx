@@ -9,7 +9,7 @@ import { ThemeProvider } from "styled-components";
 import { myTheme } from "../../styles/theme";
 import { getTodos, addTodo } from "../../api/todoApi";
 import { getActiveTasksOnPage } from "../../redux/selectors";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams,  } from "react-router-dom";
 
 const Todos: React.FC = () => {
 
@@ -21,17 +21,20 @@ const Todos: React.FC = () => {
   if(page) {
     currentPage = +page ;
   }
+  console.log(filter, currentPage)
   const storePage = useAppSelector((state) => state.todoData.currentPage)
   const storeFilter = useAppSelector((state) => state.todoData.filter)
   const activeTasks = useAppSelector((state) => state.todoData.activeTasks);
   const userID = useAppSelector((state) => state.userData.id)
   const activeTasksOnPage = useAppSelector(getActiveTasksOnPage);
   const dispatch = useAppDispatch();
+  const navigate = useNavigate()
 
   useEffect(() => {
     (async () => {
       try {
-        await dispatch(getTodos({ filter, currentPage, userID }));
+        await navigate(`/todos/${storeFilter}/${storePage}`)
+        await dispatch(getTodos({ filter: storeFilter, currentPage: storePage, userID }));
       } catch (err) {
         console.log(`Error! Unable to get todos! ${err}`);
       }

@@ -2,7 +2,6 @@ import axios from "axios";
 import { LocalStorageTools } from "../localStorage";
 import authHeader from "./headers";
 import { setUser } from "../redux/userData";
-import { Token } from "../types";
 
 const URL_LOCAL = 'http://127.0.0.1:8000/'
 

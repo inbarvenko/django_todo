@@ -4,7 +4,6 @@ import { TaskListWrapper } from "./TaskListWrapper";
 import Button from "../UI/Button/Button";
 import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { setCurrentPage } from "../../redux/toDoList";
-import { filteredToDoList } from "../../redux/selectors";
 
 
 const TaskList: React.FC = () => {

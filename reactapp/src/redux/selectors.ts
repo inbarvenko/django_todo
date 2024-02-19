@@ -6,6 +6,8 @@ export const  currentToDoList = (state : RootState) => state.todoData.toDoList;
 
 export const currentFilter = (state : RootState) => state.todoData.filter;
 
+export const currentPage = (state : RootState) => state.todoData.currentPage;
+
 export const getActiveTasksOnPage = (state : RootState) => {
   const arr = state.todoData.toDoList.filter((item) => {
     return !item.completed});

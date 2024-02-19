@@ -1,10 +1,7 @@
-import { ToDoType } from "../types";
-import IUser from "../types";
+import { FilterEnum, ToDoType } from "../types";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import authHeader from "./headers";
 import { axiosInstance } from "./request";
-import { LocalStorageTools } from "../localStorage";
-import { useAppSelector } from "../redux/hooks";
 
 type Results = {
   todos: ToDoType[];
@@ -19,7 +16,7 @@ type ResponseTodo = {
 };
 
 type Params = {
-  filter: string | undefined;
+  filter: FilterEnum | string | undefined;
   currentPage: number | undefined;
   userID: number | null | undefined;
 };

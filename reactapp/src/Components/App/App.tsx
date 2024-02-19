@@ -1,4 +1,4 @@
-import { Routes, Route, BrowserRouter, useNavigate } from "react-router-dom";
+import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 import Login from "../Login/Login";
 import Register from "../Register/Register";
@@ -18,8 +18,7 @@ import { useEffect } from "react";
 const App: React.FC = () =>{
   const dispatch = useAppDispatch();
   const user = useAppSelector((state) => state.userData.username)
-  const page = useAppSelector((state) => state.todoData.currentPage)
-  const filter = useAppSelector((state) => state.todoData.filter)
+  
 
   useEffect(() => {
     (async () => {
@@ -31,12 +30,12 @@ const App: React.FC = () =>{
             dispatch(setUser(response?.data))
           })
         }
-
+        //со стора брать стр и фильтр, чтобы передавать ниже в роуты ????
       } catch (err) {
         console.log(`Error! Unable to check tokens! ${err}`);
       }
     })();
-  }, [page, filter]);
+  }, []);
   
     return (
       <BrowserRouter>
@@ -49,7 +48,7 @@ const App: React.FC = () =>{
               {user
               ? 
               <Routes>
-                <Route path={`/todos/${filter}/${page}`} element={
+                <Route path={`/todos/:filter/:page`} element={
                     <RequireAuth>
                       <Todos />
                     </RequireAuth>
